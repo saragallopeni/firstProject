@@ -34,47 +34,46 @@ const GET_WEATHER = gql`
         lon
         lat
       }
+      main{
+        temp
+            }
     }
   }
 `;
 
-
-
-
 export default function Home() {
-  const location = "Kosovo";
+  const location = "Prizren";
   const { data, loading, error } = useQuery(GET_WEATHER, {
     variables: { location },
   });
 
   const canvasRef = useRef(null);
+   
+  
+
+
 
   useEffect(() => {
-    const cleanup = scene(canvasRef.current);
-    return cleanup;
+    if (canvasRef.current) {
+      const cleanup = scene(canvasRef.current);
+      return cleanup;
+    }
   }, []);
-
-    
-
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error: {error.message}</p>;
 
   const weather = data.getWeather;
-
+  const celsius = (((weather.main.temp - 32) * 5) / 9).toFixed(1);
+  
   return (
     <div className="main-div">
+      <div ref={canvasRef} className="canvas"></div>
       <div
-        ref={canvasRef}
-        className="canvas"
-        style={{
-          position: "absolute",
-        }}
-      ></div>
-      <div className="card">
-        <h1>Weather</h1>
-        <p>City: {weather.name}</p>
-        <p>Timezone: {weather.timezone}</p>
+        className="card">
+        <p className="city">{weather.name} {celsius} °</p>
+
+        <p>{weather.timezone}</p>
         <p>Sunset: {weather.sys.sunset}</p>
         <p>Sunrise: {weather.sys.sunrise}</p>
 
@@ -91,7 +90,7 @@ export default function Home() {
               <img src="/wind.png" alt="wind" />
             </div>
             <div>
-              <p>Speed: {weather.wind.speed}</p>
+              <div><img src="/windmill.png"></img>{weather.wind.speed}</div>
               <p>Deg: {weather.wind.deg}</p>
               <p>Gust: {weather.wind.gust}</p>
             </div>
@@ -108,7 +107,6 @@ export default function Home() {
         <p>Lon: {weather.coord.lon}</p>
         <p>Lat: {weather.coord.lat}</p>
       </div>
-
     </div>
   );
 }

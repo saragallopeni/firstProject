@@ -61,6 +61,7 @@ const typeDefs = gql`
     cod: Int
   }
 
+
   type Query {
     getWeather(location: String!): WeatherData
   }
